@@ -2,6 +2,7 @@
 
 #include "SList.h"
 
+
 pListNode BuyNode(DataType _data)
 {
 	pListNode pnode = (pListNode)malloc(sizeof(ListNode));
@@ -394,19 +395,19 @@ pListNode MergeList(pListNode* pL1, pListNode* pL2)
 		tail = cur2;
 		cur2 = cur2->pnext;
 	}
-	else if ((cur1->data) < (cur2->data))
+	else /*if ((cur1->data) < (cur2->data))*/
 	{
 		newhead = cur1;
 		tail = cur1;
 		cur1 = cur1->pnext;
 	}
-	else
-	{
-		newhead = cur1;
-		tail = cur1;
-		cur1 = cur1->pnext;
-		cur2 = cur2->pnext;
-	}
+	//else
+	//{
+	//	newhead = cur1;
+	//	tail = cur1;
+	//	cur1 = cur1->pnext;
+	//	cur2 = cur2->pnext;
+	//}
 	while ((cur1 != NULL) && (cur2 != NULL))
 	{
 		if ((cur1->data) > (cur2->data))
@@ -414,17 +415,17 @@ pListNode MergeList(pListNode* pL1, pListNode* pL2)
 			tail->pnext = cur2;
 			cur2 = cur2->pnext;
 		}
-		else if ((cur1->data) < (cur2->data))
+		else/* if ((cur1->data) < (cur2->data))*/
 		{
 			tail->pnext = cur1;
 			cur1 = cur1->pnext;
 		}
-		else
-		{
-			tail->pnext = cur1;
-			cur1 = cur1->pnext;
-			cur2 = cur2->pnext;
-		}
+		//else
+		//{
+		//	tail->pnext = cur1;
+		//	cur1 = cur1->pnext;
+		//	cur2 = cur2->pnext;
+		//}
 		tail = tail->pnext;
 	}
 	if (NULL == cur1)
@@ -436,4 +437,157 @@ pListNode MergeList(pListNode* pL1, pListNode* pL2)
 		tail->pnext = cur1;
 	}
 	return newhead;
+}
+
+pListNode HasCycle(pListNode* phead)
+{
+	assert(phead);
+	pListNode fast = (*phead);
+	pListNode slow = (*phead);
+	if ((*phead) == NULL)
+	{
+		return NULL;
+	}
+	while ((fast != NULL) && (fast->pnext != NULL))
+	{
+		fast = fast->pnext;
+		slow = slow->pnext;
+		if (fast == slow)
+		{
+			return slow;
+		}	
+	}
+	return NULL;
+}
+
+int IsListCrose(pListNode* pL1, pListNode* pL2)
+{
+	assert(pL1);
+	assert(pL2);
+	pListNode cur1 = (*pL1);
+	pListNode cur2 = (*pL2);
+
+	if ((NULL == cur1) || (NULL == cur1))
+	{
+		return 0;
+	}
+	while (cur1->pnext != NULL)
+	{
+		cur1 = cur1->pnext;
+	}
+	while (cur2->pnext != NULL)
+	{
+		cur2 = cur2->pnext;
+	}
+	if (cur1 == cur2)
+	{
+		return 1;
+	}
+	return 0;
+}
+
+pListNode JosephCircle(pListNode* phead, int M)
+{
+	assert(phead);
+	pListNode cur = (*phead);
+	pListNode del = NULL;
+	int k = 0;
+	while (cur->pnext != cur)
+	{
+		k = M;
+		while (--k)
+		{
+			cur = cur->pnext;
+		}
+		del = cur->pnext;
+		cur->pnext = del->pnext;
+		free(del);
+		del = NULL;
+	}
+	return cur;
+}
+
+int GetCyleLen(pListNode pMeetNode)
+{
+	if (pMeetNode == NULL)
+	{
+		return 0;
+	}
+	int count = 1;
+	pListNode cur = pMeetNode;
+	while (cur->pnext != pMeetNode)
+	{
+		count++;
+		cur = cur->pnext;
+	}
+	return count;
+}
+
+pListNode* FindEnterNode(pListNode* phead, pListNode* pMeetNode)
+{
+	assert(phead);
+	pListNode back = (*phead);
+	pListNode front = pMeetNode;
+	if ((back == NULL) || (front == NULL))
+	{
+		return NULL;
+	}
+	while (back != front)
+	{
+		back = back->pnext;
+		front = front->pnext;
+	}
+	return back;
+}
+
+int IsListCroseWithCycle(pListNode* pL1, pListNode* pL2)
+{
+	assert(pL1);
+	assert(pL2);
+	pListNode pmeet1 = HasCycle(pL1);
+	pListNode pmeet2 = HasCycle(pL2);
+
+	if ((NULL == pmeet1) && (NULL == pmeet2))
+	{
+		pListNode cur1 = (*pL1);
+		pListNode cur2 = (*pL2);
+		if ((cur1 == NULL) || (cur2 == NULL))
+		{
+			return 0;
+		}
+		while (cur1->pnext != NULL)
+		{
+			cur1 = cur1->pnext;
+		}
+		while (cur2->pnext != NULL)
+		{
+			cur2 = cur2->pnext;
+		}
+		if (cur1 == cur2)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	if ((NULL != pmeet1) && (NULL != pmeet2))
+	{
+		pListNode cur1 = pmeet1;
+		pListNode cur2 = pmeet2;
+		while (cur1->pnext != cur1)
+		{
+			if (cur1 == cur2)
+			{
+				return 1;
+			}
+		}
+		if (cur2 == cur1)
+		{
+			return 1;
+		}
+	}
+	return 0;
+
 }

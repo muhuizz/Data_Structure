@@ -39,24 +39,17 @@ void DelNotTailNode(pListNode pos);
 void EraseLastKNode(pListNode* phead, int k);
 pListNode MergeList(pListNode* pL1, pListNode* pL2);
 
-int HasCycle(pListNode* phead);
+pListNode HasCycle(pListNode* phead);
+
+int IsListCrose(pListNode* pL1, pListNode* pL2);
+
+pListNode JosephCircle(pListNode* phead, int M);
+
+int GetCyleLen(pListNode pMeetNode);
 
 
+pListNode* FindEnterNode(pListNode* phead, pListNode* pMeetNode);
 
+int IsListCrose(pListNode* pL1, pListNode* pL2);
 
-//int IsListCrose(pListNode* pL1, pListNode* pL2);
-
-//pListNode* JosephCircle(pListNode* phead, int M);
-
-//int GetCyleLen(pListNode* pMeetNode);
-
-
-
-
-//pListNode* FindEnterNode(pListNode* phead, pListNode* pMeetNode);
-
-//int IsListCrose(pListNode* pL1, pListNode* pL2);
-
-
-//int IsListCroseWithCycle(pListNode* pL1, pListNode* pL2);
-
+int IsListCroseWithCycle(pListNode* pL1, pListNode* pL2);
