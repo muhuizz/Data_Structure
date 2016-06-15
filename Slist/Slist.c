@@ -247,7 +247,20 @@ void Remove(pLiskList plist, DataType _data)
 
 //ÃæÊÔÌâ
 
-
+//void PrintList_reverse(pLiskList plist)
+//{
+//	assert(plist);
+//	pListNode Cur = plist->phead;
+//	if (Cur == NULL)
+//	{
+//		return;
+//	}
+//	if (Cur != NULL)
+//	{
+//		PrintList_reverse(Cur->pnext);
+//	}
+//	printf("%d<-", Cur->data);
+//}
 
 pListNode FindMidNode(pLiskList plist)
 {
@@ -354,14 +367,36 @@ void DelNotTailNode(pListNode pos)
 //	}
 //}
 
-int HasCycle(pLiskList plist)
+//int HasCycle(pLiskList plist)
+//{
+//	assert(plist);
+//	pListNode fast = plist->phead;
+//	pListNode slow = plist->phead;
+//	if (NULL == plist->phead)
+//	{
+//		return 0;
+//	}
+//	while ((fast != NULL) && (fast->pnext != NULL))
+//	{
+//		slow = slow->pnext;
+//		fast = fast->pnext->pnext;
+//		if (slow == fast)
+//		{
+//			return 1;
+//		}
+//	}
+//	return 0;
+//}
+
+
+pListNode HasCycle(pLiskList plist)
 {
 	assert(plist);
 	pListNode fast = plist->phead;
 	pListNode slow = plist->phead;
 	if (NULL == plist->phead)
 	{
-		return 0;
+		return NULL;
 	}
 	while ((fast != NULL) && (fast->pnext != NULL))
 	{
@@ -369,12 +404,11 @@ int HasCycle(pLiskList plist)
 		fast = fast->pnext->pnext;
 		if (slow == fast)
 		{
-			return 1;
+			return slow;
 		}
 	}
-	return 0;
+	return NULL;
 }
-
 //pListNode FindLastKNode(pLiskList plist, int k)
 //{
 //	assert(plist);
@@ -476,4 +510,234 @@ void EraseLastKNode(pLiskList plist, int k)
 	{
 		DelNotTailNode(back);
 	}
+}
+
+int IsListCrose(pLiskList pL1, pLiskList pL2)
+{
+	assert(pL1);
+	assert(pL2);
+	pListNode ptmp1 = pL1->phead;
+	pListNode ptmp2 = pL2->phead;
+	if ((ptmp1 == NULL) || (ptmp2 == NULL))
+	{
+		return 0;
+	}
+	while (ptmp1->pnext != NULL)
+	{
+		ptmp1 = ptmp1->pnext;
+	}
+	while (ptmp2->pnext != NULL)
+	{
+		ptmp2 = ptmp2->pnext;
+	}
+	if (ptmp1 == ptmp2)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+pListNode JosephCircle(pLiskList plist, int M)
+{
+	assert(plist);
+	int k = 0;
+	pListNode del = NULL;
+	pListNode cur = plist->phead;
+	if (M <= 0)
+	{
+		return NULL;
+	}
+	else
+	{
+		while (cur->pnext != cur)
+		{
+			k = M;
+			while (--k)
+			{
+				cur = cur->pnext;
+			}
+			del = cur->pnext;
+			cur->pnext = del->pnext;
+			free(del);
+			del = NULL;
+		}
+	}
+	return cur;
+}
+
+
+pListNode FindEnterNode(pLiskList plist)
+{
+	assert(plist);
+	pListNode ret = HasCycle(plist);
+	if (ret == NULL)
+	{
+		return NULL;
+	}
+	pListNode back = plist->phead;
+	pListNode front = ret;
+	while (back != front)
+	{
+		back = back->pnext;
+		front = front->pnext;
+	}
+	return back;
+}
+
+int IsListCroseWithCycle(pLiskList pL1, pLiskList pL2)
+{
+	assert(pL1);
+	assert(pL2);
+	pListNode pmeet1 = HasCycle(pL1);
+	pListNode pmeet2 = HasCycle(pL2);
+
+	if ((NULL == pmeet1) && (NULL == pmeet2))
+	{
+		pListNode cur1 = pL1->phead;
+		pListNode cur2 = pL2->phead;
+		if ((cur1 == NULL) || (cur2 == NULL))
+		{
+			return 0;
+		}
+		while (cur1->pnext != NULL)
+		{
+			cur1 = cur1->pnext;
+		}
+		while (cur2->pnext != NULL)
+		{
+			cur2 = cur2->pnext;
+		}
+		if (cur1 == cur2)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	if ((NULL != pmeet1) && (NULL != pmeet2))
+	{
+		pListNode cur1 = pmeet1;
+		pListNode cur2 = pmeet2;
+		if (cur2 == cur1)
+		{
+			return 1;
+		}
+		while (cur1->pnext != cur1)
+		{
+			if (cur1 == cur2)
+			{
+				return 1;
+			}
+			cur1 = cur1->pnext;
+		}
+	}
+	return 0;
+}
+
+pListNode MergeList(pLiskList pL1, pLiskList pL2)
+{
+	assert(pL1);
+	assert(pL2);
+	pListNode cur1 = pL1->phead;
+	pListNode cur2 = pL2->phead;
+	pListNode pnode = NULL;
+
+	pListNode newhead = NULL;
+	pListNode tail = NULL;
+	
+	if (NULL == cur1)
+	{
+		return cur2;
+	}
+	if (NULL == cur2)
+	{
+		return cur1;
+	}
+
+	if (cur1->data > cur2->data)
+	{
+		pnode = cur2;
+		cur2 = cur2->pnext;
+	}
+	else
+	{
+		pnode = cur1;
+		cur1 = cur1->pnext;
+	}
+	newhead = pnode;
+	tail = pnode;
+	while ((NULL != cur1) && (NULL != cur2))
+	{
+		if (cur1->data > cur2->data)
+		{
+			pnode = cur2;
+			cur2 = cur2->pnext;
+		}
+		else
+		{
+			pnode = cur1;
+			cur1 = cur1->pnext;
+		}
+		tail->pnext = pnode;
+		tail = tail->pnext;
+	}
+	if (NULL == cur1)
+	{
+		tail->pnext = cur2;
+		return newhead;
+	}
+	else
+	{
+		tail->pnext = cur1;
+		return newhead;
+	}
+}
+
+int GetCyleLen(pListNode pMeetNode)
+{
+	if (pMeetNode == NULL)
+	{
+		return 0;
+	}
+	int count = 1;
+	pListNode cur = pMeetNode;
+	while (cur->pnext != pMeetNode)
+	{
+		cur = cur->pnext;
+		count++;
+	}
+	return count;
+}
+
+pListNode MergeList_2(pLiskList pL1, pLiskList pL2)
+{
+	assert(pL1);
+	assert(pL2);
+	pListNode cur1 = pL1->phead;
+	pListNode cur2 = pL2->phead;
+	pListNode newhead = NULL;
+	if (cur1 == NULL )
+	{
+		return cur2;
+	}
+	else if (cur2 == NULL)
+	{
+		return cur1;
+	}
+	if (cur1->data > cur2->data)
+	{
+		newhead = cur2;
+		cur2 = cur2->pnext;
+	}
+	else
+	{
+		newhead = cur1;
+		cur1 = cur1->pnext;
+	}
+	newhead->pnext = MergeList_2();
 }
