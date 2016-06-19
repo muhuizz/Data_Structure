@@ -714,30 +714,4 @@ int GetCyleLen(pListNode pMeetNode)
 	return count;
 }
 
-pListNode MergeList_2(pLiskList pL1, pLiskList pL2)
-{
-	assert(pL1);
-	assert(pL2);
-	pListNode cur1 = pL1->phead;
-	pListNode cur2 = pL2->phead;
-	pListNode newhead = NULL;
-	if (cur1 == NULL )
-	{
-		return cur2;
-	}
-	else if (cur2 == NULL)
-	{
-		return cur1;
-	}
-	if (cur1->data > cur2->data)
-	{
-		newhead = cur2;
-		cur2 = cur2->pnext;
-	}
-	else
-	{
-		newhead = cur1;
-		cur1 = cur1->pnext;
-	}
-	newhead->pnext = MergeList_2();
-}
+
