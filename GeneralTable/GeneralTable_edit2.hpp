@@ -42,29 +42,38 @@ public:
 		:_head(NULL)
 	{
 		_head = _CreatGeneralTable(str);
-		cout << "1" << endl;
 	}
 	GeneralTable(const GeneralTable<T>& g)
 	{
 		Node* tmp = g._head;
 		_head = _Copy(tmp);
-		cout << "2" << endl;
 	}
 	~GeneralTable()
 	{
 		_Destory(_head);
-		cout << "3" << endl;
 	}
 
 	// 其他功能函数
 	void Print()
-	{}
+	{
+		_print(_head);
+		cout << endl;
+	}
 
-	size_t Size()
-	{}
+	size_t Size()	// 求广义表中元素总个数
+	{
+		return _size(_head);
+	}
 
-	size_t Depth()
-	{}
+	size_t Depth()	//求广义表的最大深度
+	{
+		size_t max_dp = 1;
+		size_t dp = 1;
+
+		_depth(_head, dp, max_dp);
+		return max_dp;
+	}
+
 private:
 	bool _IsValue(const T& x)
 	{
@@ -164,6 +173,65 @@ private:
 			delete del;
 		}
 	}
+
+	size_t _size(Node* head)
+	{
+		assert(head);
+		Node* cur = head;
+		size_t sz = 0;
+		while (cur)
+		{
+			if (cur->_nodeType == ValueType)
+			{
+				sz++;
+			}
+			else if (cur->_nodeType == SubType)
+			{
+				sz += _size(cur->_sub);
+			}
+			cur = cur->_next;
+		}
+		return sz;
+	}
+
+	size_t _depth(Node* head, size_t & dp, size_t& max_dp)
+	{
+		assert(head);
+		Node* cur = head;
+		while (cur)
+		{
+			if (cur->_nodeType == SubType)
+			{
+				dp++;
+				_depth(cur->_sub, dp, max_dp);
+			}
+			cur = cur->_next;
+		}
+		if (dp > max_dp)
+		{
+			max_dp = dp;
+		}
+		return --dp;
+	}
+
+	void _print(Node* head)
+	{
+		assert(head);
+		Node* cur = head;
+		while (cur)
+		{
+			if (cur->_nodeType == HeadType)
+				cout << "(";
+			else if (cur->_nodeType == ValueType)
+				cout << cur->_value << ",";
+			else if (cur->_nodeType == SubType)
+			{
+				_print(cur->_sub);
+			}
+			cur = cur->_next;
+		}
+		cout << ")";
+	}
 private:
 	Node* _head;
 };
@@ -175,11 +243,29 @@ void TestGeneralTable()
 		GeneralTable<char> g2("(a,b)");
 		GeneralTable<char> g3("((a,b,(c,d)))");
 		GeneralTable<char> g4("((a,b, (a,d) , (e,(f),h)))");
+		GeneralTable<char> g5("(((((())))))");
 
-		GeneralTable<char> g5(g1);
-		GeneralTable<char> g6(g2);
-		GeneralTable<char> g7(g3);
-		GeneralTable<char> g8(g4);
+		//GeneralTable<char> g5(g1);
+		//GeneralTable<char> g6(g2);
+		//GeneralTable<char> g7(g3);
+		//GeneralTable<char> g8(g4);
+
+		cout << " 元素个数" << g1.Size() << endl;
+		cout << " 元素个数" << g2.Size() << endl;
+		cout << " 元素个数" << g3.Size() << endl;
+		cout << " 元素个数" << g4.Size() << endl;
+
+		cout << "最大深度" << g1.Depth() << endl;
+		cout << "最大深度" << g2.Depth() << endl;
+		cout << "最大深度" << g3.Depth() << endl;
+		cout << "最大深度" << g4.Depth() << endl;
+		cout << "最大深度" << g5.Depth() << endl;
+
+		g1.Print();
+		g2.Print();
+		g3.Print();
+		g4.Print();
+		g5.Print();
 	}
 }
 
