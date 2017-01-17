@@ -53,24 +53,28 @@ public:
 public:
 	void PreOrder()	// 前序递归遍历
 	{
+		cout << "前序遍历：";
 		_preorder(_root);
 		cout << endl;
 	}
 
 	void InOrder()	// 递归中序遍历
 	{
+		cout << "中序遍历：";
 		_inorder(_root);
 		cout << endl;
 	}
 
 	void PostOrder()	// 递归后续遍历
 	{
+		cout << "后序遍历：";
 		_postorder(_root);
 		cout << endl;
 	}
 
 	void PreOrdrNonR()	// 前序非递归遍历
 	{
+		cout << "前序遍历：";
 		if (_root == NULL)
 			return;
 		stack<Node*> sta;		
@@ -92,6 +96,7 @@ public:
 	}
 	void InOrdrNonR()	// 中序非递归遍历
 	{
+		cout << "中序遍历：";
 		if (_root == NULL)
 			return;
 		stack<Node*> sta;
@@ -113,6 +118,7 @@ public:
 	}
 	void PostOrdrNonR()	// 后序非递归遍历
 	{
+		cout << "后序遍历：";
 		if (_root == NULL)
 			return;
 		Node* cur = _root;
@@ -142,6 +148,7 @@ public:
 
 	void LevelOrder()	// 层序遍历
 	{
+		cout << "层序遍历：";
 		if (_root == NULL)
 			return;
 		queue<Node*> que;		
@@ -248,7 +255,8 @@ protected:
 
 void TestBinaryTree()
 {
-	int array1[] = { 1, 2, 3, '#', '#', 4, '#', 7, '#', '#', 5, 6 };	// 中序
+	//int array1[] = { 1, 2, 3, '#', '#', 4, '#', 7, '#', '#', 5, 6 };	// 中序
+	int array1[15] = { 1, 2, '#', 3, '#', '#', 4, 5, '#', 6, '#', 7, '#', '#', 8 };
 	int sz = sizeof(array1) / sizeof(array1[0]);
 	BinaryTree<int> tree1(array1, sz, '#');
 	BinaryTree<int> tree2 = tree1;
