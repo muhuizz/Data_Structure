@@ -175,6 +175,18 @@ public:
 	{
 		return _depth(_root);
 	}
+	size_t LeafNum()
+	{
+		return _leafnum(_root);
+	}
+	size_t NumKLevel(size_t k)
+	{
+		return _numklevel(_root, k);
+	}
+	Node* FindNum(const T& x)
+	{
+		return _find(_root, x);
+	}
 protected:
 	void _preorder(Node* node)
 	{
@@ -215,6 +227,34 @@ protected:
 		size_t left_depth = _depth(node->_left);
 		size_t right_depth = _depth(node->_right);
 		return left_depth > right_depth ? left_depth +1: right_depth+1;
+	}
+	size_t _leafnum(Node* root)
+	{
+		if (root == NULL)
+			return 0;
+		if (root->_left == NULL && root->_right == NULL)
+			return 1;
+		return _leafnum(root->_left) + _leafnum(root->_right);
+	}
+	size_t _numklevel(Node* root, const size_t k)
+	{
+		if (root == NULL)
+			return 0;
+		if (k == 1)
+			return 1;
+		return _numklevel(root->_left, k - 1) + _numklevel(root->_right, k - 1);
+	}
+	Node* _find(Node* root, const T& x)
+	{
+		Node* ret = NULL;
+		if (root == NULL)
+			return NULL;
+		if (root->_value == x)
+			return root;
+		ret  = _find(root->_left, x);
+		if (ret == NULL)
+			ret = _find(root->_right, x);
+		return ret;
 	}
 protected:
 	Node* _createBinaryTree(T* data, size_t& index, const size_t& size, const T& invalid)
@@ -271,6 +311,9 @@ void TestBinaryTree()
 	tree2.LevelOrder();
 	cout << "元素个数-->" << tree2.Size() << endl;
 	cout << "二叉树的深度-->" << tree2.Depth() << endl;
+	cout << "叶子结点的数目："<< tree2.LeafNum() << endl;
+	cout << "某个结点的Node：" << tree2.FindNum(3) << endl;
+	cout << "第7层结点的数目：" << tree2.NumKLevel(3) << endl;
 }
 
 
