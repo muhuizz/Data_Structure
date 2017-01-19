@@ -44,26 +44,132 @@ public:		// 默认成员函数
 		_destory(_root);
 	}
 public:		// 自定义成员函数
-	// 前序遍历
-	void PreOrder()		// 前序遍历搜索二叉树的结果一定是有序的
+	// 中序遍历
+	void InOrder()		// 中序遍历搜索二叉树的结果一定是有序的
 	{
-		_preOrder(_root);
+		_inOrder(_root);
 		cout << endl;
 	}
-	// 插入结点
+	// 递归插入结点
 	bool InsertR(const T& x)
 	{
 		return _insertR(_root, x);
 	}
-	// 删除结点
+	// 递归删除结点
 	bool RemoveR(const T& x)	// 注释2
 	{
 		return _removeR(_root,x);
 	}
-	//	void Inorder()
-	//	bool Find(const T& x)
-	//	bool Insert(const T& x)
-	//	bool Insert(const T& x)
+	// 查找结点
+	bool Find(const T& x)
+	{
+		Node* cur = _root;
+		while (cur)
+		{
+			if (cur->_value < x)
+				cur = cur->_right;
+			else if (cur->_value > x)
+				cur = cur->_left;
+			else
+				return true;
+		}
+		return false;
+	}
+	// 非递归插入
+	bool Insert(const T& x)			// 注释4
+	{
+		if (_root == NULL)
+		{
+			_root = new Node(x);
+			return true;
+		}
+		Node* cur = _root;
+		Node* parent = NULL;
+		while (cur)		// 找到待插入点
+		{
+			if (x > cur->_value)
+			{
+				parent = cur;
+				cur = cur->_right;
+			}
+			else if (x < cur->_value)
+			{
+				parent = cur;
+				cur = cur->_left;
+			}
+			else  // x == cur->_value
+			{
+				return false;
+			}
+		}
+		if (x > parent->_value)
+			parent->_right = new Node(x);
+		else    // x < parent->_value
+			parent->_left = new Node(x);
+		return true;
+	}
+	// 非递归删除
+	bool Remove(const T& x)
+	{
+		if (_root == NULL)
+			return false;
+		Node* cur = _root;
+		Node* parent = NULL;
+		while (cur)
+		{
+			if (cur->_value == x)   //	找到该结点，并删除
+			{
+				Node* del = cur;
+				if (cur->_left == NULL)		// 判断cur哪个子树为NULL
+				{
+					if (parent == NULL)	// cur为根节点
+						_root = cur->_right;
+					else if (cur == parent->_left)		// 判断cur为parent的哪个子树
+						parent->_left = cur->_right;
+					else  //cur == parent->_right
+						parent->_right = cur->_right;
+				}
+				else if (cur->_right == NULL)
+				{
+					if (parent == NULL)	// cur为根节点
+						_root = cur->_left;
+					else if (cur == parent->_left)		// 判断cur为parent的哪个子树
+						parent->_left = cur->_left;
+					else  //cur == parent->_right
+						parent->_right = cur->_left;
+				}
+				else		// 两个孩子--->替换法删除，寻找左子树的最右结点
+				{
+					del = cur->_left;
+					parent = cur;
+					while (del->_right)
+					{
+						parent = del;
+						del = del->_right;
+					}
+					cur->_value = del->_value;
+					if (del == parent->_left)
+						parent->_left = del->_left;
+					else
+						parent->_right = del->_left;
+				}
+				delete del;
+				del = NULL;
+				return true;
+			}
+			else if (x > cur->_value)
+			{
+				parent = cur;
+				cur = cur->_right;
+			}
+			else  // x < cur->_value 
+			{
+				parent = cur;
+				cur = cur->_left;
+			}
+		}
+		return false;
+	}
 protected:	// 私有内置成员函数
 	Node* _copySearchBinaryTree(Node* node)
 	{
@@ -87,13 +193,13 @@ protected:	// 私有内置成员函数
 		}
 	}
 
-	void _preOrder(Node* root)
+	void _inOrder(Node* root)
 	{
 		if (root != NULL)
 		{
-			_preOrder(root->_left);
+			_inOrder(root->_left);
 			cout << root->_value << "  ";
-			_preOrder(root->_right);
+			_inOrder(root->_right);
 		}
 	}
 	
@@ -122,26 +228,27 @@ protected:	// 私有内置成员函数
 			return _removeR(node->_left, x);
 		else // x == node->_value，删除该结点
 		{
+			Node* del = node;
 			if (node->_left == NULL)
 				node = node->_right;
 			else if (node->_right == NULL)
 				node = node->_left;
 			else  // node->_left != NULL && node->_right != NULL，找左子树的最右结点
 			{
-				Node* cur = node->_left;
+				del = node->_left;
 				Node* parent = node;
-				while (cur->_right)
+				while (del->_right)
 				{
-					parent = cur;
-					cur = cur->_right;
+					parent = del;
+					del = del->_right;
 				}
-				node->_value = cur->_value;
-				if (cur == parent->_left)		// 注释3
-					parent->_left = cur->_left;
+				node->_value = del->_value;
+				if (del == parent->_left)		// 注释3
+					parent->_left = del->_left;
 				else
-					parent->_right = cur->_left;
-				delete cur;
+					parent->_right = del->_left;
 			}
+			delete del;
 			return true;
 		}
 	}
@@ -156,12 +263,14 @@ void TestSearchBinaryTree()
 	SearchBinaryTree<int> tree;
 	for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0]); ++i)
 	{
-		tree.InsertR(arr[i]);
+		//tree.InsertR(arr[i]);
+		tree.Insert(arr[i]);
 	}
-	tree.PreOrder();
-	tree.RemoveR(5);
-	tree.PreOrder();
-
+	tree.InOrder();
+	tree.Remove(9);
+	tree.InOrder();
+	cout << "----------" << endl;
+	cout << "5存在否？ " << tree.Find(5) << endl;
 }
 
 /*
@@ -172,5 +281,8 @@ void TestSearchBinaryTree()
 			从而维持搜索树的性质
 注释3：此时cur为左子树的最右结点，但cur依然可能有左子树，因此要对cur的左子树悬挂点进行判断
 			如果选择的是右子树的最左结点，处理方法相同，不同的是考虑的是cur的右子树悬挂点
+注释4：非递归插入一个结点，有两种实现，一种是使用parent，一种不使用parent
+			使用parent的方式如上述代码；
+			不使用parent的方式是在while()循环内部，当x大于或者小于cur->_value时，判断此时cur该侧的子结点是否为NULL
 */
 
