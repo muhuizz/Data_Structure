@@ -62,7 +62,7 @@ public:
 		}
 		cout << endl;
 	}
-
+	/*-------------------------------------------------------------------------------------------------------*/
 	void InThreading()	// 中序序列化
 	{
 		Node* prev = NULL;
@@ -91,6 +91,65 @@ public:
 		}
 		cout << endl;
 	}
+	/*-------------------------------------------------------------------------------------------------------*/
+	void PostThreading()		// 后续序列化
+	{
+		Node* prev = NULL;
+		_postThreading(_root, prev);
+	}
+
+
+	void PostOrder()		// 后续序列化遍历		// 注释1
+	{
+		if (_root == NULL)
+			return;
+		Node* cur = _root;
+		Node* prev = NULL;
+		
+		while (1)
+		{
+			if (cur->_left == NULL)
+			{
+				if (cur->_right == NULL)
+					break;
+				else
+					cur = cur->_right;
+			}
+			else
+				cur = cur->_left;
+		}
+		
+		while (1)  // GetParent(cur)
+		{
+			cout << cur->_value << endl;
+			if (cur->_rightTag == THREAD)
+			{
+				prev = cur;
+				cur = cur->_right;
+			}
+			else		// cur->_rightTag == LINK
+			{
+				// 此时一定满足cur->_right = prev;
+				Node* parent = GetParent(cur);
+				if (parent == NULL)
+					return;
+				cur = parent->_right;
+				while (1)		// 找到该子树后续遍历的第一个结点
+				{
+					if (cur->_left == NULL)
+					{
+						if (cur->_right == NULL)
+							break;
+						else
+							cur = cur->_right;
+					}
+					else
+						cur = cur->_left;
+				}
+			}
+		}
+		cout << endl;
+	}
 protected:
 	Node* _creatBinaryTree(T* arr, size_t& index, size_t sz, const T& invalid)
 	{
@@ -103,6 +162,7 @@ protected:
 		}
 		return node;
 	}
+	/*------------------------------------*/
 	void _preThreading(Node* node, Node*& prev)		// prev必须传递引用
 	{
 		if (node == NULL)
@@ -125,6 +185,7 @@ protected:
 		if (node->_rightTag == LINK)
 			_preThreading(node->_right, prev);
 	}
+	/*------------------------------------*/
 	void _inThreading(Node* node, Node*& prev)
 	{
 		if (node == NULL)
@@ -145,19 +206,66 @@ protected:
 		if (node->_rightTag == LINK)
 			_inThreading(node->_right, prev);
 	}
-
+	/*------------------------------------*/
+	void _postThreading(Node* node, Node*& prev)
+	{
+		if (node == NULL)
+			return;
+		if (node->_leftTag == LINK)
+			_postThreading(node->_left, prev);
+		if (node->_rightTag == LINK)
+			_postThreading(node->_right, prev);
+		if (node->_left == NULL)
+		{
+			node->_left = prev;
+			node->_leftTag = THREAD;
+		}
+		if (prev && prev->_right == NULL)
+		{
+			prev->_right = node;
+			prev->_rightTag = THREAD;
+		}
+		prev = node;
+	}
+	/*------------------------------------*/
+	Node* GetParent(Node* node)
+	{
+		if (node == _root)
+			return NULL;
+		Node* cur = _root;
+		while (cur)
+		{
+			if ((cur->_leftTag == LINK && cur->_left == node) || (cur->_rightTag == LINK && cur->_right == node))
+				return cur;
+			else if (node->_value > cur->_value)
+				cur = cur->_right;
+			else
+				cur = cur->_left;
+		}
+		return NULL;
+	}
 protected:
 	Node* _root;
 };
 
 void TestBinaryTreeThd()
 {
-	//int array1[10] = { 1, 2, 3, '#', '#', 4, '#', '#', 5, 6 };
-	int array1[15] = { 1, 2, '#', 3, '#', '#', 4, 5, '#', 6, '#', 7, '#', '#', 8 };
+	int array1[10] = { 1, 2, 3, '#', '#', 4, '#', '#', 5, 6 };
+	//int array1[15] = { 1, 2, '#', 3, '#', '#', 4, 5, '#', 6, '#', 7, '#', '#', 8 };
 	size_t sz1 = sizeof(array1) / sizeof(array1[0]);
 	BinaryTreeThd<int> tree1(array1, sz1, '#');
-	tree1.PreThreading();
-	tree1.PrevThdOrder();
+	//tree1.PreThreading();
+	//tree1.PrevThdOrder();
 	//tree1.InThreading();
 	//tree1.InThdOrder();
+	tree1.PostThreading();
+	tree1.PostOrder();
 }
+
+
+
+/*
+说明：对于前中后序线索化，都是采用递归的方式，而代码不同之处仅仅在于代码块的位置不同
+			线索化部分的代码块内容完全一直，仅仅是相对左右递归的位置不同而已！
+注释1：后序线索化遍历两种方式，一是使用三叉链结构，二是借助Findparent()函数，找到对应结点的parent
+*/
