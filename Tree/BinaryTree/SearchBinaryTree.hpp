@@ -5,36 +5,36 @@
 #include <iostream>
 using namespace std;
 
-template<typename T>
+template<typename V>
 struct SearchBinaryTreeNode
 {
-	SearchBinaryTreeNode<T>* _left;
-	SearchBinaryTreeNode<T>* _right;
-	T _value;
-	SearchBinaryTreeNode(const T& x)
+	SearchBinaryTreeNode<V>* _left;
+	SearchBinaryTreeNode<V>* _right;
+	V _value;
+	SearchBinaryTreeNode(const V& x)
 		: _value(x)
 		, _left(NULL)
 		, _right(NULL)
 	{}
 };
 
-template<typename T>
+template<typename V>
 class SearchBinaryTree
 {
-	typedef SearchBinaryTreeNode<T> Node;
+	typedef SearchBinaryTreeNode<V> Node;
 public:		// 默认成员函数
 	SearchBinaryTree()
 		: _root(NULL)
 	{}
-	SearchBinaryTree(const SearchBinaryTree<T>& t)
+	SearchBinaryTree(const SearchBinaryTree<V>& t)
 	{
 		_root = _copySearchBinaryTree(t._root);
 	}
-	SearchBinaryTree<T>& operator=(const SearchBinaryTree<T>& t)
+	SearchBinaryTree<V>& operator=(const SearchBinaryTree<V>& t)
 	{
 		if (this != &t)
 		{
-			SearchBinaryTree<T> tmp(t);	// 传递引用，当不是自赋值的情况下再进行拷贝
+			SearchBinaryTree<V> tmp(t);	// 传递引用，当不是自赋值的情况下再进行拷贝
 			std::swap(this->_root, tmp._root);
 		}
 		return *this;
@@ -51,17 +51,17 @@ public:		// 自定义成员函数
 		cout << endl;
 	}
 	// 递归插入结点
-	bool InsertR(const T& x)
+	bool InsertR(const V& x)
 	{
 		return _insertR(_root, x);
 	}
 	// 递归删除结点
-	bool RemoveR(const T& x)	// 注释2
+	bool RemoveR(const V& x)	// 注释2
 	{
 		return _removeR(_root,x);
 	}
 	// 查找结点
-	bool Find(const T& x)
+	bool Find(const V& x)
 	{
 		Node* cur = _root;
 		while (cur)
@@ -76,7 +76,7 @@ public:		// 自定义成员函数
 		return false;
 	}
 	// 非递归插入
-	bool Insert(const T& x)			// 注释4
+	bool Insert(const V& x)			// 注释4
 	{
 		if (_root == NULL)
 		{
@@ -109,7 +109,7 @@ public:		// 自定义成员函数
 		return true;
 	}
 	// 非递归删除
-	bool Remove(const T& x)
+	bool Remove(const V& x)
 	{
 		if (_root == NULL)
 			return false;
@@ -203,7 +203,7 @@ protected:	// 私有内置成员函数
 		}
 	}
 	
-	bool _insertR(Node*& node, const T& x)		// 注释1
+	bool _insertR(Node*& node, const V& x)		// 注释1
 	{
 		if (node == NULL)
 		{
@@ -218,7 +218,7 @@ protected:	// 私有内置成员函数
 			return false;
 	}
 
-	bool _removeR(Node*& node, const T& x)
+	bool _removeR(Node*& node, const V& x)
 	{
 		if (node == NULL)
 			return false;
