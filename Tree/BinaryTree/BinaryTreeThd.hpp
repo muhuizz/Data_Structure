@@ -43,12 +43,16 @@ public:
 	{
 	//	_destory(_root);
 	}
-	void PreThreading()	// 前序序列化后，_root依旧为第一个结点
+	
+	// 前序序列化
+	void PreThreading()	// root依旧为第一个结点
 	{
 		Node* prev = NULL;
 		_preThreading(_root, prev);
 	}
-	void PrevThdOrder()	// 前序序列化遍历
+
+	// 前序序列化遍历
+	void PrevThdOrder()	
 	{
 		cout << "前序序列化遍历" << endl;
 		Node* cur = _root;
@@ -63,12 +67,15 @@ public:
 		cout << endl;
 	}
 	/*-------------------------------------------------------------------------------------------------------*/
-	void InThreading()	// 中序序列化
+	// 中序序列化
+	void InThreading()	
 	{
 		Node* prev = NULL;
 		_inThreading(_root, prev);
 	}
-	void InThdOrder()	// 中序序列化遍历
+	
+	// 中序序列化遍历
+	void InThdOrder()	
 	{
 		cout << "中序序列化遍历" << endl;
 		if (_root == NULL)
@@ -92,14 +99,15 @@ public:
 		cout << endl;
 	}
 	/*-------------------------------------------------------------------------------------------------------*/
-	void PostThreading()		// 后续序列化
+	// 后续序列化
+	void PostThreading()		
 	{
 		Node* prev = NULL;
 		_postThreading(_root, prev);
 	}
-
-
-	void PostOrder()		// 后续序列化遍历		// 注释1
+	
+	// 后续序列化遍历
+	void PostOrder()				// 注释1
 	{
 		if (_root == NULL)
 			return;
@@ -108,20 +116,14 @@ public:
 		
 		while (1)
 		{
-			if (cur->_left == NULL)
-			{
-				if (cur->_right == NULL)
-					break;
-				else
-					cur = cur->_right;
-			}
-			else
-				cur = cur->_left;
+			if (cur->_leftTag == THREAD && cur->_rightTag == THREAD)
+				break;
+			cur = cur->_left;
 		}
 		
 		while (1)  // GetParent(cur)
 		{
-			cout << cur->_value << endl;
+			cout << cur->_value << "  ";
 			if (cur->_rightTag == THREAD)
 			{
 				prev = cur;
@@ -132,23 +134,31 @@ public:
 				// 此时一定满足cur->_right = prev;
 				Node* parent = GetParent(cur);
 				if (parent == NULL)
+				{
+					cout << endl;
 					return;
+				}
+				while (cur == parent->_right)
+				{
+					prev = cur;
+					cur = parent;
+					cout << cur->_value << "  ";
+					parent = GetParent(cur);
+					if (parent == NULL)
+					{
+						cout << endl;
+						return;
+					}
+				}
 				cur = parent->_right;
 				while (1)		// 找到该子树后续遍历的第一个结点
 				{
-					if (cur->_left == NULL)
-					{
-						if (cur->_right == NULL)
-							break;
-						else
-							cur = cur->_right;
-					}
-					else
-						cur = cur->_left;
+					if (cur->_leftTag == THREAD && cur->_rightTag == THREAD)
+						break;
+					cur = cur->_left;
 				}
 			}
 		}
-		cout << endl;
 	}
 protected:
 	Node* _creatBinaryTree(T* arr, size_t& index, size_t sz, const T& invalid)
@@ -250,8 +260,10 @@ protected:
 
 void TestBinaryTreeThd()
 {
-	int array1[10] = { 1, 2, 3, '#', '#', 4, '#', '#', 5, 6 };
+	//int array1[10] = { 1, 2, 3, '#', '#', 4, '#', '#', 5, 6 };
 	//int array1[15] = { 1, 2, '#', 3, '#', '#', 4, 5, '#', 6, '#', 7, '#', '#', 8 };
+	int array1[] = { 1, 2, '#', 3, '#', '#', 4, 5, '#', 6, '#', 7, 9, 10, '#', '#', '#', '#', 8 };
+
 	size_t sz1 = sizeof(array1) / sizeof(array1[0]);
 	BinaryTreeThd<int> tree1(array1, sz1, '#');
 	//tree1.PreThreading();
@@ -265,7 +277,8 @@ void TestBinaryTreeThd()
 
 
 /*
-说明：对于前中后序线索化，都是采用递归的方式，而代码不同之处仅仅在于代码块的位置不同
+说明：对于前中后序线索化，都是采用递归的方式，使用当前结点线索化左指针，用prev结点线索化右指针
+			而代码不同之处仅仅在于代码块的位置不同
 			线索化部分的代码块内容完全一直，仅仅是相对左右递归的位置不同而已！
 注释1：后序线索化遍历两种方式，一是使用三叉链结构，二是借助Findparent()函数，找到对应结点的parent
 */

@@ -296,7 +296,9 @@ protected:
 void TestBinaryTree()
 {
 	//int array1[] = { 1, 2, 3, '#', '#', 4, '#', 7, '#', '#', 5, 6 };	// 中序
-	int array1[15] = { 1, 2, '#', 3, '#', '#', 4, 5, '#', 6, '#', 7, '#', '#', 8 };
+	//int array1[15] = { 1, 2, '#', 3, '#', '#', 4, 5, '#', 6, '#', 7, '#', '#', 8 };
+	int array1[] = { 1, 2, '#', 3, '#', '#', 4, 5, '#', 6, '#', 7, 9, 10, '#', '#', '#', '#', 8 };
+
 	int sz = sizeof(array1) / sizeof(array1[0]);
 	BinaryTree<int> tree1(array1, sz, '#');
 	BinaryTree<int> tree2 = tree1;
@@ -312,7 +314,7 @@ void TestBinaryTree()
 	cout << "元素个数-->" << tree2.Size() << endl;
 	cout << "二叉树的深度-->" << tree2.Depth() << endl;
 	cout << "叶子结点的数目："<< tree2.LeafNum() << endl;
-	cout << "某个结点的Node：" << tree2.FindNum(3) << endl;
+	cout << "某个结点的Node：" << tree2.FindNum(99) << endl;
 	cout << "第7层结点的数目：" << tree2.NumKLevel(3) << endl;
 }
 
