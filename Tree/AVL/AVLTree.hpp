@@ -121,11 +121,148 @@ public:
 		}
 		return true;
 	}
+
+	bool Insert_R(const K& x)
+	{
+
+	}
+	// 删除结点
+	bool Remove(const K& x){}
+
+	// 中序遍历
+	void InOrder()
+	{
+		_inOrder(_root);
+		cout << endl;
+	}
+
+	// 检查AVL树是否平衡
 protected:
-	void _RotateL(Node* node){}
-	void _RotateR(Node* node){}
-	void _RotateLR(Node* node){}
-	void _RotateRL(Node* node){}
+	// 左旋转
+	void _RotateL(Node* parent)
+	{
+		Node* subR = parent->_right;
+		Node* subRL = subR->_left;
+		Node* pparent = parent->_parent;
+		// 1
+		parent->_right = subRL;
+		if (subRL != NULL)
+			subRL->_parent = parent;
+		// 2
+		subR->_left = parent;
+		parent->_parent = subR;
+		// 3
+		if (pparent != NULL)
+		{
+			if (parent == pparent->_left)
+				pparent->_left = subR;
+			else		// parent == pparent->_right
+				pparent->_right = subR;
+		}
+		else		// pparent == NULL，表明parent为根节点
+		{
+			_root = subR;
+		}
+		subR->_parent = pparent;
+		// 调整平衡因子
+		subR->_bf = 0;
+		parent->_bf = 0;
+	}
+	// 右旋转
+	void _RotateR(Node* parent)
+	{
+		Node* pparent = parent->_parent;
+		Node* subL = parent->_left;
+		Node* subLR = subL->_right;
+		// 1
+		parent->_left = subLR;
+		if (subLR != NULL)
+			subLR->_parent = parent;
+		// 2
+		subL->_right = parent;
+		parent->_parent = subL;
+		// 3
+		if (pparent != NULL)
+		{
+			if (parent == pparent->_left)
+				pparent->_left = subL;
+			else
+				pparent->_right = subL;
+		}
+		else		// pparent == NULL
+			_root = subL;
+		subL->_parent = pparent;
+		// 调整平衡因子
+		parent->_bf = 0;
+		subL->_bf = 0;
+	}
+	// 左右双旋
+	void _RotateLR(Node* parent)
+	{
+		Node* subL = parent->_left;
+		Node* subLR = subL->_right;
+		int bf = subLR->_bf;		// 注释3
+		_RotateL(subL);
+		_RotateR(parent);			// 旋转过程中不需要关注各个节点的平衡因子
+
+		// 调整平衡因子
+		if (bf == -1)
+		{
+			parent->_bf = 1;
+			subL->_bf = 0;
+			subLR->_bf = 0;
+		}
+		else if (bf == 1)
+		{
+			parent->_bf = 0;
+			subL->_bf = -1;
+			subLR->_bf = 0;
+		}
+		else		// bf == 0
+		{
+			parent->_bf = 0;
+			subL->_bf = 0;
+			subLR->_bf = 0;
+		}
+	}
+	// 右左双旋
+	void _RotateRL(Node* parent)
+	{
+		Node* subR = parent->_right;
+		Node* subRL = subR->_left;
+		int bf = subRL->_bf;		// 注释3
+		_RotateR(subR);
+		_RotateL(parent);			// 旋转过程中不需要关注各个节点的平衡因子
+
+		// 调整平衡因子
+		if (bf == -1)
+		{
+			parent->_bf = 0;
+			subR->_bf = 1;
+			subRL->_bf = 0;
+		}
+		else if (bf == 1)
+		{
+			parent->_bf = -1;
+			subR->_bf = 0;
+			subRL->_bf = 0;
+		}
+		else		// bf == 0
+		{
+			parent->_bf = 0;
+			subR->_bf = 0;
+			subRL->_bf = 0;
+		}
+	}
+
+	void _inOrder(Node* node)
+	{
+		if (node == NULL)
+			return;
+		_inOrder(node->_left);
+		cout << node->_key << "  ";
+		_inOrder(node->_right);
+	}
 protected:
 	Node* _root;
 };
@@ -133,13 +270,14 @@ protected:
 
 void TestAVLTree()
 {
-	// int arr[] = { 4, 2, 6, 1, 3, 5, 15, 7, 16, 14 };
-	int arr[] = { 16, 3, 7, 11, 9, 26, 18, 14, 15 };
+	int arr[] = { 4, 2, 6, 1, 3, 5, 15, 7, 16, 14 };
+	// int arr[] = { 16, 3, 7, 11, 9, 26, 18, 14, 15 };
 	AVLTree<int, int> tree;
 	for (size_t i = 0; i < sizeof(arr) / sizeof(arr[0]); i++)
 	{
 		tree.Insert(arr[i]);
 	}
+	tree.InOrder();
 }
 
 
@@ -150,5 +288,6 @@ void TestAVLTree()
 注释2：如果parent的平衡因子进行调整之后变为0，表明插入的结点之前，parent的平衡因子为1或-1，
 		新增结点导致了以parent为根节点的子树左右平衡，但并未增加该子树的高度
 		因此，一旦parent的平衡因子为0，就不需要继续向上调整
-
+注释3：通过parent和subL决定了进行左右旋转，这里需要通过判断subLR->_bf确定最终的各节点的平衡因子，
+		旋转过程中会改变 subLR->_bf 的值，因此这里需要进行保存
 */
