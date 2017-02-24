@@ -53,10 +53,10 @@ void BubbleSort(int* arr, const size_t& sz)
 	assert(arr);
 	int flag = 1;
 	size_t k = sz - 1;
-	for (size_t i = 0; i < k; i++)
+	for (size_t i = 0; i < sz-1; i++)
 	{
 		int m = 0;
-		for (size_t j = 0; j < sz - i - 1; j++)
+		for (size_t j = 0; j < k; j++)
 		{
 			if (arr[j] > arr[j + 1])
 			{
@@ -364,21 +364,33 @@ void TestCompareSort()
 	int arr4[] = { 5, 1, 2, 5, 3, 4, 8, 5, 6, 5 };
 
 	//InsertSort(arr, sizeof(arr) / sizeof(arr[0]));
-	//BubbleSort(arr, sizeof(arr) / sizeof(arr[0]));
+
+	BubbleSort(arr1, sizeof(arr1) / sizeof(arr1[0]));
+	BubbleSort(arr2, sizeof(arr2) / sizeof(arr2[0]));
+	BubbleSort(arr3, sizeof(arr3) / sizeof(arr3[0]));
+	BubbleSort(arr4, sizeof(arr4) / sizeof(arr4[0]));
+
 	//ShellSort(arr, sizeof(arr) / sizeof(arr[0]));
+
 	//SelectSort(arr, sizeof(arr) / sizeof(arr[0]));
+
 	//HeapSort(arr, sizeof(arr) / sizeof(arr[0]));
+
 	//MergeSort(arr, 0, (sizeof(arr) / sizeof(arr[0])) - 1);
+
 	//SelectSort_2(arr, sizeof(arr) / sizeof(arr[0]));
+
 	//FastSort(arr, 0, (sizeof(arr) / sizeof(arr[0])) - 1);
+
 	//MergeSort(arr1, 0, sizeof(arr1) / sizeof(arr1[0]) - 1);
 	//MergeSort(arr2, 0, sizeof(arr2) / sizeof(arr2[0]) - 1);
 	//MergeSort(arr3, 0, sizeof(arr3) / sizeof(arr3[0]) - 1);
 	//MergeSort(arr4, 0, sizeof(arr4) / sizeof(arr4[0]) - 1);
-	SelectSort_2(arr1, sizeof(arr1) / sizeof(arr1[0]));
-	SelectSort_2(arr2, sizeof(arr2) / sizeof(arr2[0]));
-	SelectSort_2(arr3, sizeof(arr3) / sizeof(arr3[0]));
-	SelectSort_2(arr4, sizeof(arr4) / sizeof(arr4[0]));
+	
+	//SelectSort_2(arr1, sizeof(arr1) / sizeof(arr1[0]));
+	//SelectSort_2(arr2, sizeof(arr2) / sizeof(arr2[0]));
+	//SelectSort_2(arr3, sizeof(arr3) / sizeof(arr3[0]));
+	//SelectSort_2(arr4, sizeof(arr4) / sizeof(arr4[0]));
 
 
 	PrintArray(arr1, sizeof(arr1) / sizeof(arr1[0]));
