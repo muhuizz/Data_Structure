@@ -1,0 +1,37 @@
+#ifndef __VECTOR_HPP__
+#define __VECTOR_HPP__
+#include <iostream>
+using namespace std;
+
+template <typename T>
+class Vector
+{
+public:
+	Vector()
+		:_arr(NULL)
+		 ,_sz(0)
+		 ,_capacity(0)
+	{}
+	~Vector()
+	{
+		if(_arr != NULL)
+		{
+			delete _arr;
+			_sz = 0;
+			_capacity = 0;
+		}
+	}
+public:
+	void PushBack(const T& x);
+	void PopBack();
+	void Insert(int pos, const T& x);
+	void Erase(int pos);
+	bool Empty();
+protected:
+	T* _arr;
+	int _sz;
+	int _capacity;
+};
+
+#endif// __VECTOR_HPP__
+

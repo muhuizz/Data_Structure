@@ -1,178 +1,129 @@
-#pragma once
+#ifndef __VECTOR_HPP__
+#define __VECTOR_HPP__
 
 #include <iostream>
-#include <cassert>
-#include "TypeTraits.hpp"
 using namespace std;
-//vector的迭代器就是一个指针。
-//new(_finish)T(x);
-template<typename T>
+#include <cstring>
+#include "TypeTraits.hpp"
+
+template <typename T>
 class Vector
 {
 public:
-	typedef T* VectorIterator;
-	typedef const T* ConstVectorIterator;
+	typedef T* Iterator;
+	typedef const T* ConstIterator;
+	
 	Vector()
 		:_start(NULL)
-		, _finish(NULL)
-		, _endofstorage(NULL)
+		 ,_finish(NULL)
+		 ,_endOfStorage(NULL)
 	{}
-	//拷贝构造
-	//深浅拷贝、类型萃取、设计方案
-	//拷贝的目的一般只是为了访问，新开辟的空间只需要有效元素的空间即可
-	Vector(const Vector& v)
-	{
-		size_t size = v.Size();
-		T* tmp = new T[size];
-		if (TypeTraits<T>::__IsPODType().Get())
-		{
-			memcpy(tmp, v._start, size* sizeof(T));
-		}
-		else
-		{
-			for (size_t i = 0; i < size; i++)
-			{
-				tmp[i] = *(v._start + i);
-			}
-		}
-		delete[]v._start;
-		v._start = tmp;
-		v._finish = v._start + size;
-		v._endofstorage = v._finish;
-	}
-
 	~Vector()
+	{}
+public:
+	Iterator Begin() const
 	{
-		if (_start != NULL)
-		{
-			delete[] _start;
-		}
+		return _start;
+	}
+	Iterator End() const
+	{
+		return _finish;
+	}
+//	ConstIterator Begin() const
+//	{
+//		return _start;
+//	}
+//	Iterator End() const
+//	{
+//		return _finish;
+//	}
+	size_t Size() const
+	{
+		return (End() - Begin());
+	}
+	size_t Capacity() const
+	{
+		return (_endOfStorage - Begin());
+	}
+	bool Empty() const
+	{
+		return (Begin() == End());
+	}
+	T& Front()
+	{
+		return (*Begin());
+	}
+	T& Back()
+	{
+		return (*(End()-1));
 	}
 
+	T& operator[](size_t pos)
+	{
+		return *(Begin()+pos);
+	}
 	void PushBack(const T& x)
 	{
 		CheckVector();
 		*_finish = x;
 		_finish++;
 	}
-
 	void PopBack()
 	{
-		assert(_start);
-		_finish--;
+		if(!Empty())
+			_finish--;
 	}
-
-	void Insert(VectorIterator pos,const T& x)
+	void Insert(Iterator pos, const T& x)
 	{
-		CheckVector();
-		VectorIterator tmp = _finish;
-		while (tmp != pos)
+		Iterator tmp = End();
+		while(tmp != pos)
 		{
-			*tmp = *(tmp - 1);
+			*tmp = *(tmp-1);
 			tmp--;
 		}
 		*pos = x;
 		_finish++;
 	}
-
-	void Erase(VectorIterator pos)
+	void Erase(Iterator pos)
 	{
-		assert(_start);
-		while (pos != _finish)
+		while((pos+1) != End())
 		{
-			*pos = *(pos + 1);
+			*pos = *(pos+1);
 			pos++;
 		}
 		--_finish;
 	}
-
-	VectorIterator Begin()
-	{
-		assert(_start);
-		return _start;
-	}
-	VectorIterator End()
-	{
-		assert(_start);
-		return _finish;
-	}
-
-	ConstVectorIterator Begin()const 
-	{
-		assert(_start);
-		return _start;
-	}
-	ConstVectorIterator End()const 
-	{
-		assert(_start);
-		return _finish;
-	}
-
-private:
-	size_t Size()
-	{
-		if (_start == NULL)
-		{
-			return 0;
-		}
-		return _finish - _start;
-	}
-
+protected:
 	void CheckVector()
 	{
-		if (_endofstorage == _finish)
+		if(_endOfStorage == End())
 		{
-			size_t size = Size();
-			int newcapacity = size * 2 + 3;
-			T* tmp = new T [newcapacity];
-
-			if (TypeTraits<T>::__IsPODType().Get())
+			size_t size=Size();
+			int newCapacity = (size==0?1:(size*2));
+			T* tmp = new T[newCapacity];
+			//
+			if(typename TypeTraits<T>::__IsPODType().Get())
 			{
-				memcpy(tmp, _start, sizeof(T)*size);
+				memcpy(tmp, _start, sizeof(T)*Size());
 			}
 			else
 			{
-				for (size_t i = 0; i < size; i++)
+				for(size_t i=0; i < Size(); i++)
 				{
-					//tmp[i] = _start[i];
-					tmp[i] = *(_start + i);
+					tmp[i] = *(_start+i);
 				}
 			}
 			delete[] _start;
-			_start = tmp;
-			_finish = _start + size;
-			_endofstorage = _start + newcapacity;
+			_start=tmp;
+			_finish=_start+size;	// can't use Size()
+			_endOfStorage=_start+newCapacity;
 		}
 	}
-
-private:
-	VectorIterator _start;
-	VectorIterator _finish;
-	VectorIterator _endofstorage;
+protected:
+	Iterator _start;		// the head of used_space
+	Iterator _finish;		// the tail of used_space
+	Iterator _endOfStorage;	// the tail of all_space
 };
-template<typename T>
-void PrintVector( Vector<T>& v)
-{
-	Vector<T>::VectorIterator it = v.Begin();
-	for (; it != v.End(); it++)
-	{
-		cout << *it << " ";
-	}
-	cout << endl;
-}
 
-void TestVector()
-{
-	Vector<int> v;
-	v.PushBack(1);
-	v.PushBack(2);
-	v.PushBack(3);
-	v.PushBack(4);
-	v.Insert(v.Begin(),99);
-	v.PushBack(5);
-	PrintVector(v);
-	v.PopBack();
-	v.PopBack();
-	v.Erase(v.End());
-	PrintVector(v);
-}
+#endif// __VECTOR_HPP__
+
