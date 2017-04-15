@@ -72,7 +72,7 @@ public:
 		GetHuffmanCode(tree.GetRoot(), s);
 
 		//Ñ¹ËõÎÄ¼þ
-		int result = fseek(fout, SEEK_SET, 0);
+		int result = fseek(fout, 0, SEEK_SET);
 		int pos = 0;
 		int value = 0;
 		while ((ch = fgetc(fout)) != EOF)
@@ -91,7 +91,7 @@ public:
 				}
 			}
 		}
-		if (pos != 8)
+		if(pos != 0)
 		{
 			value <<= (8 - pos);
 			fputc(value, fin);
